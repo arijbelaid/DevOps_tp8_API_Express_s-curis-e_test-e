@@ -39,17 +39,27 @@ Le projet est une API de contact (`contact-api`) qui :
 
 ---
 
-## 📸 Captures d'écran
 
-Toutes les captures sont disponibles dans le dossier [`captures/`](captures/).
 
 ### 🛠️ Partie 1 : OWASP API Security Top 10
 
 #### 1. Environnement et test initial
 ![01](captures/01_env_test.png)
 
-#### 2. Tableau OWASP rempli
-![02](captures/02_owasp_table.png)
+#### 2. Tableau OWASP API Security Top 10
+
+| Risque OWASP | Concerne notre API ? | Mesure dans ce TP |
+| :--- | :--- | :--- |
+| **API1: Broken Object Level Authorization (BOLA)** | Non (pour l'instant) | Aucune route ne permet de lire un objet par son ID sans vérifier le propriétaire. (Attention : si on ajoute `GET /api/contact/:id`, il faudra de l'authentification). |
+| **API2: Broken Authentication** | Non (pour l'instant) | Le formulaire de contact est public. (Si on ajoutait une route admin pour lire les messages, il faudrait une authentification forte). |
+| **API3: Broken Object Property Level Authorization** | Oui | `.strict()` dans Zod refuse les champs non déclarés (empêche le Mass Assignment, ex: envoyer `isAdmin: true`). |
+| **API4: Unrestricted Resource Consumption** | Oui | `express-rate-limit` (5 req/min) et `express.json({ limit: '10kb' })` (taille max du corps de la requête). |
+| **API5: Broken Function Level Authorization** | Non | Pas de fonction d'administration dans l'API actuelle. |
+| **API6: Unrestricted Access to Sensitive Business Flows** | Oui | Le formulaire peut être spammé. La mesure est le rate limiting (API4) qui limite les dégâts. |
+| **API7: Server Side Request Forgery (SSRF)** | Non | L'API ne demande pas d'URL à l'utilisateur pour faire des requêtes serveur. |
+| **API8: Security Misconfiguration** | Oui | Helmet (sécurise les headers), `app.disable("x-powered-by")`, et le `errorHandler` qui ne divulgue plus la stack trace (remplacée par une erreur générique 500). |
+| **API9: Improper Inventory Management** | Non | Une seule version de l'API est déployée dans ce TP. |
+| **API10: Unsafe Consumption of APIs** | Non | L'API ne consomme pas d'API tierces (pas de `fetch` ou `axios` vers l'extérieur). |
 
 ### 🔍 Partie 2 : Validation et gestion des erreurs
 
